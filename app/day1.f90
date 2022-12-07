@@ -27,7 +27,7 @@ module mday1
       end if
     end do
 
-    write(*,*) "Max Calories:", maxval(elves)
+    write(*,*) "Day 1 Part 1", maxval(elves)
 
     part2: block
       logical :: mask(size(elves))
@@ -37,7 +37,7 @@ module mday1
       mask(maxloc(elves,mask)) = .false.
       mask(maxloc(elves,mask)) = .false.
 
-      write(*,*) "Top Three:", sum( elves, mask=.not. mask)
+      write(*,*) "Day 1 Part 2", sum( elves, mask=.not. mask)
 
     end block part2
 

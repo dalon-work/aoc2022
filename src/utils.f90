@@ -29,9 +29,7 @@ contains
 
     stat = 0
     
-    if (allocated(self%buf)) then
-      deallocate(self%buf)
-    end if
+    self%buf = ""
 
     do while (stat == 0)
       read(self%funit,'(A)', advance="no", iostat=stat, iomsg=err_msg, size=chunk) line
