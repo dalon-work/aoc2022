@@ -2,6 +2,8 @@ module aoc_utils
   use iso_fortran_env
   implicit none
 
+  integer, parameter :: i64 = int64
+
   type :: FormattedFile
     private
     integer :: funit
@@ -9,6 +11,7 @@ module aoc_utils
 
     contains
       procedure, public, non_overridable :: scanline
+      procedure, public, non_overridable :: readlines
       procedure, public, non_overridable :: text
   end type
 
@@ -16,10 +19,43 @@ module aoc_utils
     character(:), allocatable :: buf
     contains
       procedure, public, non_overridable :: length
-      procedure, public, non_overridable :: to_int64
+      procedure, public, non_overridable :: to_i64
   end type
 
+ !> Assign a character sequence to a string.
+    interface assignment(=)
+        module procedure :: assign_string_char
+    end interface assignment(=)
 contains
+
+    elemental subroutine assign_string_char(lhs, rhs)
+        type(String), intent(inout) :: lhs
+        character(len=*), intent(in) :: rhs
+        lhs%buf = rhs
+    end subroutine assign_string_char
+
+  logical function is_upper(c) 
+    character,intent(in) :: c
+    is_upper = (c >= 'A' .and. c <= 'Z')
+  end function
+
+  subroutine assert(cond)
+    logical, intent(in) :: cond
+    if (.not. cond) then
+      stop "Assertion failed"
+    end if
+  end subroutine
+
+  function readlines(self) result(lines)
+    class(FormattedFile), intent(inout) :: self
+    type(string), allocatable :: lines(:)
+
+    allocate(lines(0))
+
+    do while (self%scanline()) 
+      lines = [lines,self%text()]
+    end do
+  end function
 
   logical function scanline(self) result(r)
     class(FormattedFile), intent(inout) :: self
@@ -52,12 +88,12 @@ contains
     call move_alloc(self%buf, s%buf)
   end function
 
-  integer(int64) function length(self) result(l)
+  integer(i64) function length(self) result(l)
     class(String), intent(in) :: self
-    l = len(self%buf, 1_int64)
+    l = len(self%buf, 1_i64)
   end function
 
-  integer(int64) function to_int64(self) result(i)
+  integer(i64) function to_i64(self) result(i)
     class(String), intent(in) :: self
     integer :: stat
     character(1024) :: msg

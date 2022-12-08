@@ -8,8 +8,8 @@ module mday1
   subroutine day1()
     type(FormattedFile) :: ffile
     type(String) :: line
-    integer(int64) :: i, cur_elf
-    integer(int64), allocatable :: elves(:)
+    integer(i64) :: i, cur_elf
+    integer(i64), allocatable :: elves(:)
 
     ffile = fopen("data/day1.txt")
 
@@ -22,7 +22,7 @@ module mday1
         elves = [elves, cur_elf]
         cur_elf = 0
       else
-        i = line%to_int64()
+        i = line%to_i64()
         cur_elf = cur_elf + i
       end if
     end do

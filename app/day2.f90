@@ -7,11 +7,11 @@ module mday2
   character, parameter :: abc(*) = ['A', 'B', 'C']
   character, parameter :: xyz(*) = ['X', 'Y', 'Z']
                                                      ! A  B  C
-  integer(int64), parameter :: score(*,*) = reshape( [ 3, 0, 6 , & ! X
+  integer(i64), parameter :: score(*,*) = reshape( [ 3, 0, 6 , & ! X
                                                        6, 3, 0 , & ! Y
                                                        0, 6, 3 ],& ! Z 
                                                      [3,3])   
-  integer(int64), parameter :: lose_draw_win(*) = [ 0, 3, 6 ]
+  integer(i64), parameter :: lose_draw_win(*) = [ 0, 3, 6 ]
   public :: day2
 
   contains
@@ -19,7 +19,7 @@ module mday2
   subroutine part1()
     type(FormattedFile) :: ffile
     type(String) :: line
-    integer(int64) :: my_score
+    integer(i64) :: my_score
     character :: them, me
     integer :: i,j
 
@@ -42,7 +42,7 @@ module mday2
   subroutine part2()
     type(FormattedFile) :: ffile
     type(String) :: line
-    integer(int64) :: my_score,i,j,k
+    integer(i64) :: my_score,i,j,k
     character :: them, me
 
     ffile = fopen("data/day2.txt")
