@@ -20,6 +20,7 @@ module aoc_utils
     contains
       procedure, public, non_overridable :: length
       procedure, public, non_overridable :: to_i64
+      procedure, public, non_overridable :: replace
   end type
 
  !> Assign a character sequence to a string.
@@ -44,6 +45,16 @@ contains
     if (.not. cond) then
       stop "Assertion failed"
     end if
+  end subroutine
+
+  subroutine replace(self, a,b)
+    class(String), intent(inout) :: self
+    character, intent(in) :: a, b
+    integer :: i
+
+    do i=1,len(self%buf)
+      if (self%buf(i:i) == a) self%buf(i:i) = b
+    end do
   end subroutine
 
   function readlines(self) result(lines)
