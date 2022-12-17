@@ -56,7 +56,7 @@ module mday3
   subroutine part2()
     type(FormattedFile) :: ffile
     type(String), allocatable :: lines(:)
-    integer(i64) :: sack(3), total, priority,i,j
+    integer(i64) :: sack(3), total, priority,i
 
     ffile = fopen("data/day3.txt")
 
