@@ -283,9 +283,9 @@ contains
     call move_alloc(self%buf, s%buf)
   end function
 
-  integer(i64) function length(self) result(l)
+  integer function length(self) result(l)
     class(String), intent(in) :: self
-    l = len(self%buf, 1_i64)
+    l = len(self%buf)
   end function
 
   integer(i64) elemental impure function to_i64(self) result(i)
