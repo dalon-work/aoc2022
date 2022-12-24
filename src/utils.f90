@@ -47,6 +47,28 @@ module aoc_utils
       procedure, public, non_overridable :: clear => char_array_clear
   end type
 
+  type :: i64Array
+    integer(i64) :: n = 0
+    integer(i64), allocatable :: buf(:)
+    contains
+      procedure, private, non_overridable :: i64_array_push
+      procedure, private, non_overridable :: i64_array_push_many
+      generic, public :: push => i64_array_push, i64_array_push_many
+
+      procedure, private, non_overridable :: i64_array_pop
+      procedure, private, non_overridable :: i64_array_pop_many
+      generic, public :: pop => i64_array_pop, i64_array_pop_many
+
+      procedure, private, non_overridable :: i64_array_back
+      procedure, private, non_overridable :: i64_array_back_many
+      generic, public :: back => i64_array_back, i64_array_back_many
+
+      procedure, public, non_overridable :: array => i64_array_array
+      procedure, public, non_overridable :: size => i64_array_size
+      procedure, public, non_overridable :: capacity => i64_array_capacity
+      procedure, public, non_overridable :: clear => i64_array_clear
+  end type
+
  !> Assign a character sequence to a string.
     interface assignment(=)
         module procedure :: assign_string_char
@@ -95,6 +117,131 @@ contains
     end do
 
   end function
+
+  function i64_array_array(self) result(o)
+    class(i64Array), target, intent(inout) :: self
+    integer(i64), pointer :: o(:)
+
+    o => self%buf(:self%n)
+  end function
+
+  elemental impure subroutine i64_array_clear(self)
+    class(i64Array), intent(inout) :: self
+      self%n = 0
+  end subroutine
+
+  function i64_array_back(self) result(o)
+    class(i64Array), target, intent(inout) :: self
+    integer(i64), pointer :: o
+    if (self%n == 0) then
+      write(*,*) "Char Array is size 0!"
+      stop
+    endif
+    o => self%buf(self%n)
+  end function
+
+  function i64_array_back_many(self, m) result(o)
+    class(i64Array), intent(in) :: self
+    integer(i64), intent(in) :: m
+    integer(i64), allocatable :: o(:)
+    if (self%n < m) then
+      write(*,*) "Char Array is too small!"
+      stop
+    endif
+    o = self%buf(self%n-m+1:self%n)
+  end function
+
+  integer(i64) function i64_array_size(self) result(o)
+    class(i64Array), intent(in) :: self
+    o = self%n
+  end function
+
+  integer(i64) function i64_array_capacity(self) result(o)
+    class(i64Array), intent(in) :: self
+    if (.not. allocated(self%buf)) then
+      o = 0
+    else
+      o = size(self%buf)
+    end if
+  end function
+
+  logical function i64_array_pop(self) result(o)
+    class(i64Array), intent(inout) :: self
+    if (self%n /= 0) then
+      self%n = self%n - 1
+      o = .true.
+    else
+      o = .false.
+    end if
+  end function
+
+  logical function i64_array_pop_many(self, m) result(o)
+    class(i64Array), intent(inout) :: self
+    integer(i64), intent(in) :: m
+    if (self%n >= m) then
+      self%n = self%n - m
+      o = .true.
+    else
+      o = .false.
+    end if
+  end function
+
+  subroutine i64_array_push(self, c)
+    class(i64Array),intent(inout) :: self
+    integer(i64), intent(in) :: c
+
+    if (.not. allocated(self%buf)) then
+      allocate(self%buf(1))
+    end if
+
+    if (self%n == self%capacity()) then
+      block
+        integer(i64), allocatable :: new_buf(:)
+        integer(i64) :: i, new_cap
+
+        new_cap = int(real(self%capacity(),r64) * grow, i64) + 1
+        allocate(new_buf(new_cap))
+
+        do i=1,self%n
+          new_buf(i) = self%buf(i)
+        end do
+
+        call move_alloc(new_buf,self%buf)
+      end block
+    end if
+
+    self%n = self%n+1
+    self%buf(self%n) = c
+  end subroutine
+
+  subroutine i64_array_push_many(self, c)
+    class(i64Array),intent(inout) :: self
+    integer(i64), intent(in) :: c(:)
+    integer(i64) :: m
+
+    m = size(c)
+
+    if (.not. allocated(self%buf)) then
+      allocate(self%buf(m))
+    end if
+
+    if (self%n + m >= self%capacity()) then
+      block
+        integer(i64), allocatable :: new_buf(:)
+        integer(i64) :: i, new_cap
+
+        new_cap = self%n + m
+        allocate(new_buf(new_cap))
+
+        new_buf(:self%n) = self%buf(:self%n)
+
+        call move_alloc(new_buf,self%buf)
+      end block
+    end if
+
+    self%buf(self%n+1:self%n+m) = c(:)
+    self%n = self%n + m
+  end subroutine
 
   elemental impure subroutine char_array_clear(self)
     class(CharArray), intent(inout) :: self
