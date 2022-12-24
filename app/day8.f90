@@ -80,14 +80,65 @@ module mday8
 
     write(*,*) "Day 8, Part 1:",total_visible
 
+    call part2(trees)
+
   end subroutine
 
-  subroutine part2()
+  integer(i64) function char_to_index(c) result(o)
+    character, intent(in) :: c
+    o = iachar(c) - iachar('0') + 1
+  end function
+
+  subroutine part2(trees)
+    character, intent(in) :: trees(:,:)
+    integer(i64) :: loc(10), cindex, last_seen
+    integer(i64), allocatable :: visibility(:,:)
+    integer(i64) :: i,j
+
+    allocate( visibility(size(trees,1),size(trees,2)), source=1_i64)
+
+    do i=1,size(trees,1)
+      loc = 1
+      do j=1,size(trees,2)
+        cindex = char_to_index(trees(i,j))
+        visibility(i,j) = visibility(i,j) * (j - maxval(loc(cindex:)))
+        loc(cindex) = j
+      end do
+    end do
+
+    do i=1,size(trees,1)
+      loc = size(trees,2)
+      do j=size(trees,2),1,-1
+        cindex = char_to_index(trees(i,j))
+        visibility(i,j) = visibility(i,j) * (minval(loc(cindex:))-j)
+        loc(cindex) = j
+      end do
+    end do
+
+    do j=1,size(trees,2)
+      loc = 1
+      do i=1,size(trees,1)
+        cindex = char_to_index(trees(i,j))
+        visibility(i,j) = visibility(i,j) * (i - maxval(loc(cindex:)))
+        loc(cindex) = i
+      end do
+    end do
+
+    do j=1,size(trees,2)
+      loc = size(trees,1)
+      do i=size(trees,1),1,-1
+        cindex = char_to_index(trees(i,j))
+        visibility(i,j) = visibility(i,j) * (minval(loc(cindex:))-i)
+        loc(cindex) = i
+      end do
+    end do
+
+    write(*,*) "Day 8, Part 2", maxval(visibility)
+
   end subroutine
 
   subroutine day8()
     call part1()
-    call part2()
   end subroutine
 
 end module
