@@ -9,6 +9,7 @@ program main
   use mday7
   use mday8
   use mday9
+  use mday10
   implicit none
 
   call day1()
@@ -20,4 +21,5 @@ program main
   call day7()
   call day8()
   call day9()
+  call day10()
 end program main
