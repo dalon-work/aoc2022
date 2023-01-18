@@ -69,6 +69,10 @@ module aoc_utils
       procedure, public, non_overridable :: clear => i64_array_clear
   end type
 
+  interface assignment(=)
+    module procedure :: assign_i64array_array
+  end interface assignment(=)
+
  !> Assign a character sequence to a string.
     interface assignment(=)
         module procedure :: assign_string_char
@@ -360,11 +364,18 @@ contains
     self%n = self%n + m
   end subroutine
 
+  subroutine assign_i64array_array(lhs, rhs)
+      type(i64Array), intent(inout) :: lhs
+      integer(i64), intent(in) :: rhs(:)
+      lhs%buf = rhs
+      lhs%n = size(rhs)
+  end subroutine 
+
   elemental subroutine assign_string_char(lhs, rhs)
       type(String), intent(inout) :: lhs
       character(len=*), intent(in) :: rhs
       lhs%buf = rhs
-  end subroutine assign_string_char
+  end subroutine 
 
   logical function is_upper(c) 
     character,intent(in) :: c
